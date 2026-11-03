@@ -4,6 +4,14 @@ import subprocess, select, time, sys
 def log(prefix, msg, start):
   print(f"[{time.time()-start:6.3f}] {prefix} {msg}")
 
+def send(proc, line):
+  # 相手が既に終了していたら書き込まない
+  try:
+    proc.stdin.write(line + "\n")
+    proc.stdin.flush()
+  except BrokenPipeError:
+    pass
+
 judge_cmd = ["./judge"]
 if len(sys.argv) >= 2:
     judge_cmd.append(sys.argv[1])
@@ -32,15 +40,23 @@ try:
             line = line.strip()
             if r == judge.stdout:
                 log("JUDGE→", line, start)
-                solve.stdin.write(line + "\n")
-                solve.stdin.flush()
+                send(solve, line)
             else:
                 log("SOLVE→", line, start)
-                judge.stdin.write(line + "\n")
-                judge.stdin.flush()
+                send(judge, line)
 except KeyboardInterrupt:
     print("Interrupted.")
+    sys.exit(130)
 finally:
     for proc in [judge, solve]:
         if proc.poll() is None:
             proc.terminate()
+        try:
+            proc.stdin.close()
+        except BrokenPipeError:
+            pass
+
+# judge と solve がどちらも正常終了したときだけ正解扱い
+if judge.returncode != 0 or solve.returncode != 0:
+    print(f"judge exit={judge.returncode}, solve exit={solve.returncode}")
+    sys.exit(1)

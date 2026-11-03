@@ -50,9 +50,25 @@
 `run.sh` は
 
 1. `judge.cpp`
-2. `solve.cpp`
+2. 解答（一つ上のディレクトリに `main.cpp` があればそれ、なければ `solve.cpp`）
 
 をコンパイルし、`data/*.in` を順番に実行します。
+正解したケースは `PASS data/001.in` の1行だけ、不正解のケースは通信ログと `FAIL` を表示し、最後に `n / m passed.` を表示します。
+
+どのディレクトリから実行しても構いません。
+
+```text
+icpc/A/
+├── main.cpp      # 解答
+└── reactive/     # このテンプレートをコピー
+```
+
+```bash
+cd icpc/A
+./reactive/run.sh
+```
+
+judge は **不正解なら 0 以外で終了** してください（`reactive.py` が judge / solve の終了コードで正誤を判定します）。
 
 ---
 

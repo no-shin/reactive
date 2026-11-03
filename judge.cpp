@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < LIMIT; i++) {
     int x;
     if (!(cin >> x))
-      return 0;
+      return 1; // 答えずに solve が終了した
 
     if (x == secret) {
       cout << "CORRECT" << endl;
@@ -35,4 +35,5 @@ int main(int argc, char *argv[]) {
 
   cout << "FAILED" << endl;
   cout.flush();
+  return 1; // 不正解は 0 以外で終了する
 }
